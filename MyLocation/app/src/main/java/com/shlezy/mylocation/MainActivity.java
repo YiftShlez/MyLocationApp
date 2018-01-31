@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity
 
     public void connect (View view)
     {
-        Intent intent = new Intent (this, ConnectionActvity.class);
+        Intent intent = new Intent (this, ConnectionActivity.class);
         intent.putExtra("ServerIP", IPEdit.getText().toString());
         intent.putExtra("ServerPort", PortEdit.getText().toString());
     }

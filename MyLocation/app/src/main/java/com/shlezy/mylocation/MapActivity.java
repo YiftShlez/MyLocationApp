@@ -94,9 +94,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         };
         accept.start();
-        */
         Intent service = new Intent(this, LocationClientService.class);
         startService(service);
+        */
         mapView = findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
         if (mapView != null)
