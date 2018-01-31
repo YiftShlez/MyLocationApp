@@ -1,4 +1,4 @@
-package com.shlezy.mylocation;
+/*package com.shlezy.mylocation;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -31,7 +31,7 @@ import java.util.logging.LogRecord;
  * a service on a separate handler thread.
  * <p>
  * TODO: Customize class - update intent actions and extra parameters.
- */
+ *\/
 public class LocationClientService extends IntentService
 {
     Handler toastHandler = new Handler();
@@ -47,7 +47,7 @@ public class LocationClientService extends IntentService
 
     /**
      * The function running in background
-     */
+     *\/
     private void handleClient()
     {
         Log.i(TAG, "handleClient()");
@@ -127,7 +127,7 @@ public class LocationClientService extends IntentService
      * Show a simple alert message using Toast
      *
      * @param msg the message to show in the alert
-     */
+     *\/
     public void alert(String msg)
     {
         toastHandler.post(new DisplayToast(getApplicationContext(), msg));
@@ -137,7 +137,7 @@ public class LocationClientService extends IntentService
      * Get the current location of the device using Google Play Location Service
      *
      * @return the location of the user. When no permission - return null
-     */
+     *\/
     private Location getLocation()
     {
         FusedLocationProviderClient providerClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
@@ -193,3 +193,4 @@ public class LocationClientService extends IntentService
         thread.start();
     }
 }
+*/
