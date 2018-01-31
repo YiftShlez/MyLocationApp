@@ -35,6 +35,9 @@
         <service
             android:name=".LocationClientService"
             android:exported="false" />
+
+        <activity android:name=".MapActivity" />
+        <activity android:name=".ConnectionActivity"></activity>
     </application>
 
 </manifest>

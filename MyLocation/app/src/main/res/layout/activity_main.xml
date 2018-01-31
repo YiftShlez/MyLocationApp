@@ -1,24 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.shlezy.mylocation.MainActivity">
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/my_location"
-        android:id="@+id/locationText"
         android:layout_centerHorizontal="true"
-        android:textSize="20sp"/>
+        android:layout_marginTop="30dp"
+        android:textSize="30sp"
+        android:text="Connect to server"
+        android:id="@+id/main_title"
+        android:textColor="@android:color/black"/>
 
-    <com.google.android.gms.maps.MapView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/mapview"
-        android:layout_below="@+id/locationText"
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/main_title"
+        android:layout_marginTop="30dp"
+        android:hint="Server IP Address"
+        android:id="@+id/main_edit_ip"
+        android:textSize="20sp"
         />
 
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:inputType="numberDecimal"
+        android:layout_alignStart="@id/main_edit_ip"
+        android:layout_below="@id/main_edit_ip"
+        android:layout_marginTop="15dp"
+        android:hint="Server Port"
+        android:textSize="20sp"
+        android:id="@+id/main_edit_port"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/main_edit_port"
+        android:textAllCaps="false"
+        android:layout_marginTop="15dp"
+        android:id="@+id/main_btn_connect"
+        android:text="Connect"
+        android:onClick="connect
+"
+        android:textSize="23sp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/main_btn_connect"
+        android:textAllCaps="false"
+        android:layout_marginTop="40dp"
+        android:id="@+id/main_btn_map"
+        android:textSize="23sp"
+        android:onClick="showMyLocation"
+        android:text="Show My Location"/>
 </RelativeLayout>
