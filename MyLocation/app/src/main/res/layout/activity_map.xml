@@ -9,16 +9,51 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/my_location"
-        android:id="@+id/locationText"
+        android:text="My IP Address"
+        android:id="@+id/map_ipText"
+        android:textColor="@android:color/black"
         android:layout_centerHorizontal="true"
         android:textSize="20sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_location"
+        android:id="@+id/map_locationText"
+        android:layout_below="@id/map_ipText"
+        android:textColor="@android:color/black"
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map_locationText"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/map_searchLayout">
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:ems="8"
+            android:inputType="textUri"
+            android:id="@+id/map_ipEdit"
+            android:hint="IP Address"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_toRightOf="@id/map_ipEdit"
+            android:textAllCaps="false"
+            android:id="@+id/map_searchBtn"
+            android:text="Search"/>
+    </RelativeLayout>
 
     <com.google.android.gms.maps.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/mapview"
-        android:layout_below="@+id/locationText"
+        android:layout_below="@+id/map_searchLayout"
         />
 
 </RelativeLayout>

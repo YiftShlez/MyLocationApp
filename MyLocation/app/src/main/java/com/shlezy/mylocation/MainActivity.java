@@ -26,15 +26,10 @@ public class MainActivity extends AppCompatActivity
 
     public void connect (View view)
     {
-        Intent intent = new Intent (this, ConnectionActivity.class);
+        Intent intent = new Intent (this, MapActivity.class);
         intent.putExtra(serverIPExtra, ipEdit.getText().toString());
         intent.putExtra(serverPortExtra, Integer.parseInt(portEdit.getText().toString()));
         startActivity(intent);
     }
 
-    public void showMyLocation (View view)
-    {
-        Intent intent = new Intent (this, MapActivity.class);
-        startActivity(intent);
-    }
 }

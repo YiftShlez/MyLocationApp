@@ -6,11 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Formatter;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,19 +26,37 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    private String serverAddr = "";
+    private int serverPort;
+    private TextView clientAddrText = null;
+    private TextView locationText = null;
+    ConnectionThread connectionThread = new ConnectionThread();
     MapView mapView = null;
     GoogleMap map = null;
-    TextView locationText = null;
     FusedLocationProviderClient locationProvider = null;
-    private static final int acces_location_request = 342;
+    public static final int acces_location_request = 342;
     public static final String TAG = "com.shlezy.mylocation";
+    EditText ipEdit = null;
+    Button searchBtn = null;
 
     //private ServerSocket server = null;
     //private static final int port = 8463;
@@ -102,20 +128,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onCreate(savedInstanceState);
         if (mapView != null)
             mapView.getMapAsync(this);
-        locationText = findViewById(R.id.locationText);
+        locationText = findViewById(R.id.map_locationText);
+        ipEdit = findViewById(R.id.map_ipEdit);
+        searchBtn = findViewById(R.id.map_searchBtn);
+        searchBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                connectionThread.searchIP(ipEdit.getText().toString());
+            }
+        });
+        serverAddr = getIntent().getStringExtra(MainActivity.serverIPExtra);
+        serverPort = getIntent().getIntExtra(MainActivity.serverPortExtra, 54326);
+        clientAddrText = findViewById(R.id.map_ipText);
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        clientAddrText.setText(ip);
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         if (checkLocationPermission(this))
+        {
             locationProvider.requestLocationUpdates(new LocationRequest(), new LocationCallback()
             {
                 @Override
                 public void onLocationResult(LocationResult locationResult)
                 {
                     Location location = locationResult.getLastLocation();
-                    locationText.setText(getResources().getString(R.string.my_location) + " " + location.getLatitude() + ", " + location.getLongitude());
+                    map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
+                            location.getLatitude(), location.getLongitude())));
+                    map.animateCamera(CameraUpdateFactory.zoomTo(17));
+                    locationText.setText(location.getLatitude() + ", " + location.getLongitude());
                 }
             }, null);
-        else
-            requestLocationPermission (this);
+            connectionThread.start();
+        } else
+            requestLocationPermission(this);
     }
 
     public static boolean checkLocationPermission(Context context)
@@ -152,7 +199,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         {
             googleMap.setMyLocationEnabled(true);
         } else
-            requestLocationPermission (this);
+            requestLocationPermission(this);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
@@ -168,9 +215,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     public void onLocationResult(LocationResult locationResult)
                     {
                         Location location = locationResult.getLastLocation();
-                        locationText.setText(getResources().getString(R.string.my_location) + " " + location.getLatitude() + ", " + location.getLongitude());
+                        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
+                                location.getLatitude(), location.getLongitude())));
+                        map.animateCamera(CameraUpdateFactory.zoomTo(17));
+                        locationText.setText(location.getLatitude() + ", " + location.getLongitude());
                     }
                 }, null);
+                connectionThread.start();
             }
         } else
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -200,8 +251,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         {
             Log.e(TAG, Log.getStackTraceString(ioe));
         }*/
-        super.onDestroy();
         mapView.onDestroy();
+        connectionThread.closeConnection();
+        super.onDestroy();
     }
 
     @Override
@@ -211,6 +263,158 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onLowMemory();
     }
 
+    Handler mapMarkerHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            Bundle bundle = msg.getData();
+            map.addMarker(new MarkerOptions().position
+                    (new LatLng(bundle.getDouble("latitude"), bundle.getDouble("longitude")))
+                    .title(bundle.getString("ip")));
+        }
+    };
+
+    class ConnectionThread extends Thread
+    {
+
+        Socket socket = null; //socket for connecting to the server
+        BufferedReader serverIn = null;
+        PrintWriter serverOut = null;
+
+        public void closeConnection()
+        {
+            serverOut.println("exit");
+            try
+            {
+                serverIn.close();
+                serverOut.close();
+                socket.close();
+            } catch (IOException ioe)
+            {
+                Log.e(TAG, "Error closing connection");
+                Log.e(TAG, Log.getStackTraceString(ioe));
+            }
+            stop();
+        }
+
+        public void searchIP(String ip)
+        {
+            if (!checkLocationPermission(getApplicationContext()))
+            {
+                requestLocationPermission(MapActivity.this);
+                return;
+            }
+            FusedLocationProviderClient provider = LocationServices.getFusedLocationProviderClient(MapActivity.this);
+            Task<Location> locationTask = provider.getLastLocation();
+            while (!locationTask.isComplete())
+                ;
+            if (locationTask.isSuccessful())
+            {
+                final Location location = locationTask.getResult();
+                final String finalIP = ip;
+                new Thread()
+                {
+                    public void run()
+                    {
+                        serverOut.println("check:" + location.getLatitude() + ";" +
+                                location.getLongitude() + ";" + finalIP);
+                    }
+                }.start();
+            }
+        }
+
+        public void run()
+        {
+            Log.i(TAG, "Connecting to server in IP " + serverAddr + " in port " + serverPort);
+            try
+            {
+                InetAddress inetAddress = InetAddress.getByName(serverAddr);
+                socket = new Socket(inetAddress, serverPort);
+                serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                serverOut = new PrintWriter(socket.getOutputStream(), true);
+            } catch (IOException ioe)
+            {
+                Log.e(TAG, "Error: Failed to connect to server in address " + serverAddr + ":" + serverPort);
+                Log.e(TAG, Log.getStackTraceString(ioe));
+                clientAddrText.setText("Error");
+                locationText.setText("Error");
+                return;
+            }
+
+            while (serverIn != null)
+            {
+                String line = "";
+                try
+                {
+                    line = serverIn.readLine();
+                } catch (IOException ioe)
+                {
+                    Log.e(TAG, "Failed listening to server");
+                    Log.e(TAG, Log.getStackTraceString(ioe));
+                    break;
+                }
+                if (line == null)
+                {
+                    Log.i(TAG, "connnection closed");
+                    break;
+                }
+                Log.i(TAG, "received line from server: " + line);
+                if (line.startsWith("check:"))
+                {
+                    Location serverLocation = new Location("");
+                    serverLocation.setLatitude(Double.parseDouble(line.split(":")[1].split(";")[0]));
+                    serverLocation.setLongitude(Double.parseDouble(line.split(":")[1].split(";")[1]));
+                    if (checkLocationPermission(MapActivity.this))
+                    {
+                        FusedLocationProviderClient provider = LocationServices.getFusedLocationProviderClient(MapActivity.this);
+                        Task<Location> locationTask = provider.getLastLocation();
+                        while (!locationTask.isComplete())
+                            ;
+                        if (locationTask.isSuccessful())
+                        {
+                            Location myLocation = locationTask.getResult();
+                            float distance = myLocation.distanceTo(serverLocation);
+                            Log.i(TAG, "Distance: " + distance);
+                            if (distance <= 300)
+                            {
+                                Log.i(TAG, "close");
+                                serverOut.println("locResult:" + myLocation.getLatitude() + ";" +
+                                        myLocation.getLongitude());
+                            } else
+                            {
+                                Log.i(TAG, "far");
+                                serverOut.println("locResult:far");
+                            }
+                        } else
+                        {
+                            Log.e(TAG, "Error getting location");
+                            serverOut.println("locResult:Error0");
+                        }
+                    } else
+                    {
+                        requestLocationPermission(MapActivity.this);
+                        serverOut.println("locResult:Error1");
+                    }
+                } else if (line.startsWith("locResult:"))
+                {
+                    String result = line.substring(10);
+                    if (!(result.equals("far") || result.startsWith("Error")))
+                    {
+                        String[] params = result.split(";");
+                        Bundle bundle = new Bundle();
+                        bundle.putDouble("latitude", Double.parseDouble(params[1]));
+                        bundle.putDouble("longitude", Double.parseDouble(params[2]));
+                        bundle.putString("ip", params[0]);
+                        Message message = new Message();
+                        message.setData(bundle);
+                        mapMarkerHandler.sendMessage(message);
+                    }
+                }
+            }
+            Log.i(TAG, "connection closed");
+        }
+    }
 /*
     private void handleClient(Socket client)
     {

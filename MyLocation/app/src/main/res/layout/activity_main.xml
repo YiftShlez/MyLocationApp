@@ -51,15 +51,4 @@
         android:onClick="connect"
         android:textSize="23sp"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/main_btn_connect"
-        android:textAllCaps="false"
-        android:layout_marginTop="40dp"
-        android:id="@+id/main_btn_map"
-        android:textSize="23sp"
-        android:onClick="showMyLocation"
-        android:text="Show My Location"/>
 </RelativeLayout>

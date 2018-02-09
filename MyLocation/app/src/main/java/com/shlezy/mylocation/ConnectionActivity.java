@@ -1,5 +1,6 @@
-package com.shlezy.mylocation;
+/*package com.shlezy.mylocation;
 
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -27,7 +28,7 @@ import static com.shlezy.mylocation.MainActivity.serverPortExtra;
 import static com.shlezy.mylocation.MainActivity.TAG;
 import static com.shlezy.mylocation.MapActivity.checkLocationPermission;
 import static com.shlezy.mylocation.MapActivity.requestLocationPermission;
-
+import static com.shlezy.mylocation.MapActivity.acces_location_request;
 public class ConnectionActivity extends AppCompatActivity
 {
     private Socket socket = null; //socket for connecting to the server
@@ -39,7 +40,7 @@ public class ConnectionActivity extends AppCompatActivity
     private TextView serverAddrText = null;
     private TextView clientAddrText = null;
     private TextView locationText = null;
-
+    ConnectionThread connectionThread = new ConnectionThread();
     public void log(String message, int status)
     {
         switch (status)
@@ -56,6 +57,13 @@ public class ConnectionActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
+        if (requestCode == acces_location_request)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                connectionThread.start();
+            }
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -80,8 +88,13 @@ public class ConnectionActivity extends AppCompatActivity
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
         clientAddrText.setText(ip);
         if (checkLocationPermission(this))
-
-            new Thread(new ConnectionThread()).start();
+        {
+            connectionThread.start();
+        }
+        else
+        {
+            requestLocationPermission(this);
+        }
         //TODO: handle connection to server using intent extras from MainActivity
     }
 
@@ -103,7 +116,9 @@ public class ConnectionActivity extends AppCompatActivity
         }
     };
 
-    class ConnectionThread implements Runnable
+
+
+    class ConnectionThread extends Thread
     {
 
         private void threadLog (String message, int status)
@@ -118,6 +133,23 @@ public class ConnectionActivity extends AppCompatActivity
         private void threadLogErr (Throwable error)
         {
             threadLog(Log.getStackTraceString(error), 1);
+        }
+
+        public void closeConnection ()
+        {
+            serverOut.println("exit");
+            try
+            {
+                serverIn.close();
+                serverOut.close();
+                socket.close();
+            }
+            catch (IOException ioe)
+            {
+                threadLog("Error closing connection", 1);
+                threadLogErr(ioe);
+            }
+            stop();
         }
         public void run ()
         {
@@ -181,19 +213,25 @@ public class ConnectionActivity extends AppCompatActivity
                             if (distance <= 300)
                             {
                                 threadLog("close", 0);
-                                serverOut.println(myLocation.getLatitude() + ";" + myLocation.getLongitude());
+                                serverOut.println("locResult:" + myLocation.getLatitude() + ";" +
+                                        myLocation.getLongitude());
+                            }
+                            else
+                            {
+                                threadLog("far", 0);
+                                serverOut.println ("locResult:far");
                             }
                         }
                         else
                         {
                             threadLog("Error getting location", 1);
-                            serverOut.println("Error0");
+                            serverOut.println("locResult:Error0");
                         }
                     }
                     else
                     {
                         requestLocationPermission(ConnectionActivity.this);
-                        serverOut.println("Error0");
+                        serverOut.println("locResult:Error1");
                     }
                 }
             }
@@ -201,5 +239,11 @@ public class ConnectionActivity extends AppCompatActivity
         }
     }
 
-
+    @Override
+    protected void onDestroy()
+    {
+        connectionThread.closeConnection();
+        super.onDestroy();
+    }
 }
+*/

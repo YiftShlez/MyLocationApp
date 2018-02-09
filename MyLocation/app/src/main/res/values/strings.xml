@@ -2,6 +2,6 @@
     <string name="app_name">MyLocation</string>
 
     <string name="google_android_map_api_key">AIzaSyAydcsB8tc42FXlnUpzLa_23pzQEuFULbA</string>
-    <string name="my_location">My Location:</string>
+    <string name="my_location">My Location</string>
 
 </resources>
