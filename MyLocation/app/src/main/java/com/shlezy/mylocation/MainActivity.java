@@ -10,22 +10,26 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
 {
-    EditText IPEdit = null;
-    EditText PortEdit = null;
+    private EditText ipEdit = null;
+    private EditText portEdit = null;
+    public static final String serverIPExtra = "ServerIP";
+    public static final String serverPortExtra = "ServerPort";
+    public static final String TAG = "com.shlezy.mylocation";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        IPEdit = findViewById(R.id.main_edit_ip);
-        PortEdit = findViewById(R.id.main_edit_port);
+        ipEdit = findViewById(R.id.main_edit_ip);
+        portEdit = findViewById(R.id.main_edit_port);
     }
 
     public void connect (View view)
     {
         Intent intent = new Intent (this, ConnectionActivity.class);
-        intent.putExtra("ServerIP", IPEdit.getText().toString());
-        intent.putExtra("ServerPort", PortEdit.getText().toString());
+        intent.putExtra(serverIPExtra, ipEdit.getText().toString());
+        intent.putExtra(serverPortExtra, Integer.parseInt(portEdit.getText().toString()));
+        startActivity(intent);
     }
 
     public void showMyLocation (View view)

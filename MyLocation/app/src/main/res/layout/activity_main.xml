@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="number"
+        android:inputType="textUri"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/main_title"
         android:layout_marginTop="30dp"
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="6"
-        android:inputType="numberDecimal"
+        android:inputType="number"
         android:layout_alignStart="@id/main_edit_ip"
         android:layout_below="@id/main_edit_ip"
         android:layout_marginTop="15dp"
@@ -48,8 +48,7 @@
         android:layout_marginTop="15dp"
         android:id="@+id/main_btn_connect"
         android:text="Connect"
-        android:onClick="connect
-"
+        android:onClick="connect"
         android:textSize="23sp"/>
 
     <Button

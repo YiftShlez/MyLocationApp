@@ -1,6 +1,7 @@
 package com.shlezy.mylocation;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -114,7 +115,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }, null);
         else
-            requestLocationPermission();
+            requestLocationPermission (this);
     }
 
     public static boolean checkLocationPermission(Context context)
@@ -123,20 +124,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void requestLocationPermission()
+    public static void requestLocationPermission(Activity activity)
     {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION))
         {
 
-            Toast.makeText(this, "You disabled location. To enable, go to application settings", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "You disabled location. To enable, go to application settings", Toast.LENGTH_LONG).show();
 
         } else
         {
 
             // No explanation needed, we can request the permission.
 
-            ActivityCompat.requestPermissions(this,
+            ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, acces_location_request);
             // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
             // app-defined int constant. The callback method gets the
@@ -151,7 +152,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         {
             googleMap.setMyLocationEnabled(true);
         } else
-            requestLocationPermission();
+            requestLocationPermission (this);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
