@@ -27,9 +27,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MapActivity" />
-        <activity android:name=".ConnectionActivity"></activity>
+        <activity android:name=".ConnectionActivity" />
+
+        <service
+            android:name=".ConnectionService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

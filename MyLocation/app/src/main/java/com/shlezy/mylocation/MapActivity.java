@@ -284,18 +284,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         public void closeConnection()
         {
-            serverOut.println("exit");
-            try
+            new Thread ()
             {
-                serverIn.close();
-                serverOut.close();
-                socket.close();
-            } catch (IOException ioe)
-            {
-                Log.e(TAG, "Error closing connection");
-                Log.e(TAG, Log.getStackTraceString(ioe));
-            }
-            stop();
+                public void run()
+                {
+                    serverOut.println("exit");
+                    try
+                    {
+                        serverIn.close();
+                        serverOut.close();
+                        socket.close();
+                    } catch (IOException ioe)
+                    {
+                        Log.e(TAG, "Error closing connection");
+                        Log.e(TAG, Log.getStackTraceString(ioe));
+                    }
+                }
+            }.start();
         }
 
         public void searchIP(String ip)
