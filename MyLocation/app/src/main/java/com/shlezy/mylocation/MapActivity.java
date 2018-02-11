@@ -10,12 +10,19 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,7 +64,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public static final String TAG = "com.shlezy.mylocation";
     EditText ipEdit = null;
     Button searchBtn = null;
-
+    private DrawerLayout drawer = null;
+    private Toolbar toolbar = null;
+    private NavigationView navigation = null;
     //private ServerSocket server = null;
     //private static final int port = 8463;
     @Override
@@ -124,10 +133,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent service = new Intent(this, LocationClientService.class);
         startService(service);
         */
+        toolbar = findViewById(R.id.map_toolbar);
+        setSupportActionBar(toolbar);
         mapView = findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
         if (mapView != null)
             mapView.getMapAsync(this);
+        drawer = findViewById(R.id.map_drawer);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
+                toolbar, R.string.string_drawer_open, R.string.string_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigation = findViewById(R.id.map_nav);
+        navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
+        {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item)
+            {
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+        navigation.setCheckedItem(R.id.navmenu_map);
         locationText = findViewById(R.id.map_locationText);
         ipEdit = findViewById(R.id.map_ipEdit);
         searchBtn = findViewById(R.id.map_searchBtn);
@@ -261,6 +288,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+        switch (id)
+        {
+            case R.id.menu_settings:
+                return true;
+            case R.id.menu_help:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     Handler mapMarkerHandler = new Handler()

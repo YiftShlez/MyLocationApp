@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">מיקום</string>
-
+    <string name="version_name">גרסה 1.0.0</string>
     <string name="my_location">מיקום נוכחי</string>
     <string name="main_remember">שמור את פרטי השרת</string>
+    <string name="settings">הגדרות</string>
+    <string name="map">מפה</string>
+    <string name="help">עזרה</string>
+    <string name="share">שיתוף</string>
+    <string name="about">מידע נוסף</string>
 
 </resources>

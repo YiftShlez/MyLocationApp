@@ -1,9 +1,16 @@
 <resources>
-    <string name="app_name">MyLocation</string>
+    <string name="app_name">Location</string>
 
     <string name="google_android_map_api_key">AIzaSyAydcsB8tc42FXlnUpzLa_23pzQEuFULbA</string>
     <string name="my_location">My Location</string>
+    <string name="version_name">version 1.0.0</string>
     <string name="main_remember">Remember server details</string>
     <string name="preference_file_key">com.shlezy.mylocation.pref</string>
-
+    <string name="string_drawer_open">Open navigation drawer</string>
+    <string name="string_drawer_close">Close navigation drawer</string>
+    <string name="settings">Settings</string>
+    <string name="map">Map</string>
+    <string name="help">Help</string>
+    <string name="share">Share</string>
+    <string name="about">About</string>
 </resources>

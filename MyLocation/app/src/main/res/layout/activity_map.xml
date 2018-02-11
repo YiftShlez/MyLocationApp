@@ -1,59 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context="com.shlezy.mylocation.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My IP Address"
-        android:id="@+id/map_ipText"
-        android:textColor="@android:color/black"
-        android:layout_centerHorizontal="true"
-        android:textSize="20sp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/my_location"
-        android:id="@+id/map_locationText"
-        android:layout_below="@id/map_ipText"
-        android:textColor="@android:color/black"
-        android:layout_centerHorizontal="true"
-        android:textSize="20sp"/>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/map_locationText"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/map_searchLayout">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:ems="8"
-            android:inputType="textUri"
-            android:id="@+id/map_ipEdit"
-            android:hint="IP Address"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_toRightOf="@id/map_ipEdit"
-            android:textAllCaps="false"
-            android:id="@+id/map_searchBtn"
-            android:text="Search"/>
-    </RelativeLayout>
-
-    <com.google.android.gms.maps.MapView
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/mapview"
-        android:layout_below="@+id/map_searchLayout"
-        />
+        android:id="@+id/map_toolbarlayout"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-</RelativeLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/map_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/map_drawer"
+        android:layout_width="match_parent"
+        tools:openDrawer="start"
+        android:fitsSystemWindows="true"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/map_ipText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="My IP Address"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/map_locationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/map_ipText"
+                android:layout_centerHorizontal="true"
+                android:text="@string/my_location"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:id="@+id/map_searchLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/map_locationText"
+                android:layout_centerHorizontal="true">
+
+                <EditText
+                    android:id="@+id/map_ipEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="8"
+                    android:hint="IP Address"
+                    android:inputType="textUri"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/map_searchBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/map_ipEdit"
+                    android:text="Search"
+                    android:textAllCaps="false"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/map_searchLayout" />
+        </RelativeLayout>
+
+        <android.support.design.widget.NavigationView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/map_nav"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/nav_menu"
+            android:fitsSystemWindows="true"
+            >
+
+        </android.support.design.widget.NavigationView>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
