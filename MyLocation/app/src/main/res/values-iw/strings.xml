@@ -2,5 +2,6 @@
     <string name="app_name">מיקום</string>
 
     <string name="my_location">מיקום נוכחי</string>
+    <string name="main_remember">שמור את פרטי השרת</string>
 
 </resources>

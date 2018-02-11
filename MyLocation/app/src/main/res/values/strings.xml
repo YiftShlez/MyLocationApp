@@ -3,5 +3,7 @@
 
     <string name="google_android_map_api_key">AIzaSyAydcsB8tc42FXlnUpzLa_23pzQEuFULbA</string>
     <string name="my_location">My Location</string>
+    <string name="main_remember">Remember server details</string>
+    <string name="preference_file_key">com.shlezy.mylocation.pref</string>
 
 </resources>

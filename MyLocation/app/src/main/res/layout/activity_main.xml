@@ -39,11 +39,20 @@
         android:id="@+id/main_edit_port"
         />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_remember"
+        android:layout_below="@+id/main_edit_port"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:id="@+id/main_check_remember"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/main_edit_port"
+        android:layout_below="@id/main_check_remember"
         android:textAllCaps="false"
         android:layout_marginTop="15dp"
         android:id="@+id/main_btn_connect"
